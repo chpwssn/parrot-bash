@@ -1,7 +1,18 @@
 #!/bin/bash
 
+function sayline
+{
+  echo -n " "
+  for x in `seq 0 $1`
+  do
+    echo -n "-"
+  done
+  echo
+}
+
 COLS=`tput cols`
 read say
+saylen=${#say}
 read -d '' parrot <<- ENDOPARROT
 \\\
        \\\[49m
@@ -21,5 +32,7 @@ read -d '' parrot <<- ENDOPARROT
 
         [39m
 ENDOPARROT
+sayline $saylen
 echo "* $say *"
+sayline $saylen
 echo -e "$parrot"
