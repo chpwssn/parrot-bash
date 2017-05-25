@@ -10,9 +10,21 @@ function sayline
   echo "*"
 }
 
-COLS=`tput cols`
-read say
-saylen=${#say}
+function saybox
+{ 
+  saylen=${#1}
+  sayline $saylen
+  echo "| $1 |"
+  sayline $saylen
+}
+
+function sayplain
+{
+  echo "  $1  "
+}
+
+function echoparrot
+{
 read -d '' parrot <<- ENDOPARROT
 \\\
        \\\[49m
@@ -32,7 +44,82 @@ read -d '' parrot <<- ENDOPARROT
 
         [39m
 ENDOPARROT
-sayline $saylen
-echo "| $say |"
-sayline $saylen
-echo -e "$parrot"
+  echo -e "$parrot"
+}
+
+function echohelp
+{
+read -d '' help <<- ENDHELP
+Party Parrot is now in your command line
+to help spice up your pipelines.
+
+Parrot will default to reading a line from
+stdin. To express a sentance via a flag use:
+-t TEXT the sentance for parrot to say
+
+The textbox can have different options as 
+follows:
+
+-b      print text in a box
+-p      print text with no border (default)
+
+
+Bug reports or requests:
+https://github.com/chpwssn/parrot-bash
+ENDHELP
+echo "$help"
+}
+
+# Consts
+TYPE_BOX=1
+TYPE_PLAIN=2
+
+# Semi-consts
+COLS=`tput cols`
+
+# Vars
+stdin=true
+type=$TYPE_PLAIN
+
+
+# Where should we get text from
+while getopts ":bhpt:" opt; do
+  case $opt in
+    t)
+      say=${OPTARG}
+      stdin=false
+      ;;
+    h)
+      echohelp
+      exit 0
+      ;;
+    b)
+      type=$TYPE_BOX
+      ;;
+    p)
+      type=$TYPE_PLAIN
+      ;;
+    \?)
+      say="Invalid option: -$OPTARG"
+      stdin=false
+      ;;
+  esac
+done
+
+if [ "$stdin" = true ]
+then
+  read say
+fi
+
+
+case $type in
+  $TYPE_BOX)
+    saybox "$say"
+    ;;
+  $TYPE_PLAIN)
+    sayplain "$say"
+    ;;
+esac
+echoparrot
+exit 0
+
