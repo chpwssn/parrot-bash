@@ -2,7 +2,7 @@
 
 function sayline
 {
-  echo -n " "
+  echo -n "  "
   for x in `seq 0 $1`
   do
     echo -n "-"
@@ -12,7 +12,7 @@ function sayline
 
 COLS=`tput cols`
 read say
-saylen=${#say}
+saylen=$((${#say} - 1))
 read -d '' parrot <<- ENDOPARROT
 \\\
        \\\[49m
